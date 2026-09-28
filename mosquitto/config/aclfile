@@ -1,0 +1,5 @@
+user esp32
+topic write esp32/dht11/#
+
+user nodered
+topic read esp32/#

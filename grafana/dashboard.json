@@ -1,0 +1,142 @@
+{
+  "dashboard": {
+    "id": null,
+    "uid": "esp32-pro",
+    "title": "Sensores ESP32 (pro)",
+    "timezone": "browser",
+    "schemaVersion": 39,
+    "version": 0,
+    "refresh": "5s",
+    "time": { "from": "now-1h", "to": "now" },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Temperatura actual",
+        "type": "gauge",
+        "gridPos": { "x": 0, "y": 0, "w": 8, "h": 8 },
+        "datasource": { "type": "influxdb", "uid": "cfyvaybgubrwga" },
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": { "type": "influxdb", "uid": "cfyvaybgubrwga" },
+            "query": "from(bucket: \"sensores\") |> range(start: -5m) |> filter(fn: (r) => r._measurement == \"temperatura\") |> filter(fn: (r) => r._field == \"value\") |> last()"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "celsius",
+            "min": 0,
+            "max": 50,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "color": "blue", "value": null },
+                { "color": "green", "value": 15 },
+                { "color": "yellow", "value": 30 },
+                { "color": "red", "value": 38 }
+              ]
+            }
+          },
+          "overrides": []
+        }
+      },
+      {
+        "id": 2,
+        "title": "Humedad actual",
+        "type": "gauge",
+        "gridPos": { "x": 8, "y": 0, "w": 8, "h": 8 },
+        "datasource": { "type": "influxdb", "uid": "cfyvaybgubrwga" },
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": { "type": "influxdb", "uid": "cfyvaybgubrwga" },
+            "query": "from(bucket: \"sensores\") |> range(start: -5m) |> filter(fn: (r) => r._measurement == \"humedad\") |> filter(fn: (r) => r._field == \"value\") |> last()"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0,
+            "max": 100,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "color": "yellow", "value": null },
+                { "color": "green", "value": 30 },
+                { "color": "blue", "value": 70 }
+              ]
+            }
+          },
+          "overrides": []
+        }
+      },
+      {
+        "id": 3,
+        "title": "Temperatura promedio (5m)",
+        "type": "stat",
+        "gridPos": { "x": 16, "y": 0, "w": 8, "h": 8 },
+        "datasource": { "type": "influxdb", "uid": "cfyvaybgubrwga" },
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": { "type": "influxdb", "uid": "cfyvaybgubrwga" },
+            "query": "from(bucket: \"sensores\") |> range(start: -5m) |> filter(fn: (r) => r._measurement == \"temperatura\") |> filter(fn: (r) => r._field == \"value\") |> mean()"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": { "unit": "celsius", "decimals": 1 },
+          "overrides": []
+        },
+        "options": {
+          "graphMode": "none",
+          "textMode": "value"
+        }
+      },
+      {
+        "id": 4,
+        "title": "Temperatura historico",
+        "type": "timeseries",
+        "gridPos": { "x": 0, "y": 8, "w": 12, "h": 10 },
+        "datasource": { "type": "influxdb", "uid": "cfyvaybgubrwga" },
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": { "type": "influxdb", "uid": "cfyvaybgubrwga" },
+            "query": "from(bucket: \"sensores\") |> range(start: v.timeRangeStart, stop: v.timeRangeStop) |> filter(fn: (r) => r._measurement == \"temperatura\") |> filter(fn: (r) => r._field == \"value\")"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "celsius",
+            "color": { "mode": "fixed", "fixedColor": "orange" },
+            "custom": { "fillOpacity": 15, "lineWidth": 2 }
+          },
+          "overrides": []
+        }
+      },
+      {
+        "id": 5,
+        "title": "Humedad historico",
+        "type": "timeseries",
+        "gridPos": { "x": 12, "y": 8, "w": 12, "h": 10 },
+        "datasource": { "type": "influxdb", "uid": "cfyvaybgubrwga" },
+        "targets": [
+          {
+            "refId": "A",
+            "datasource": { "type": "influxdb", "uid": "cfyvaybgubrwga" },
+            "query": "from(bucket: \"sensores\") |> range(start: v.timeRangeStart, stop: v.timeRangeStop) |> filter(fn: (r) => r._measurement == \"humedad\") |> filter(fn: (r) => r._field == \"value\")"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "color": { "mode": "fixed", "fixedColor": "blue" },
+            "custom": { "fillOpacity": 15, "lineWidth": 2 }
+          },
+          "overrides": []
+        }
+      }
+    ]
+  },
+  "overwrite": true
+}

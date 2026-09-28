@@ -1,0 +1,11 @@
+.pio
+.vscode
+include/secrets.h
+.env
+CREDENTIALS.local.md
+mosquitto/certs/*.key
+mosquitto/certs/*.srl
+mosquitto/config/passwordfile
+*.pcap
+CLAUDE.md
+SAAS_INTEGRATION.md
