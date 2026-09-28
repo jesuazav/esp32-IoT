@@ -12,7 +12,7 @@ flowchart LR
     B -- TLS 1.3 --> C[Node-RED]
     C --> D[(InfluxDB)]
     D --> E[Grafana]
-    C -. futuro: alarma por umbral .-> F[Webhook / API externa]
+    C -- alarma por umbral (webhook) --> F[API externa / SaaS]
 
     style B fill:#3C4C57,color:#fff
     style C fill:#8F0000,color:#fff
@@ -88,6 +88,10 @@ La telemetr铆a real requiere el hardware f铆sico (ESP32 + DHT11, cableado DATA鈫
 ## Capturas
 
 > _Pendiente: agregar aqu铆 capturas de pantalla del dashboard de Grafana y de la comparaci贸n en Wireshark (antes/despu茅s de TLS)._
+
+## Detecci贸n de eventos e integraci贸n externa
+
+Node-RED eval煤a el umbral de temperatura con **detecci贸n de flanco** (solo dispara al cruzar de normal a alarma, no en cada lectura) y un **cooldown de 10 minutos** para no saturar el sistema con la misma alarma. Al dispararse, hace una llamada HTTP POST a un webhook externo con un payload estructurado (`asset_id`, `alarm_type`, `value`, `threshold`, `timestamp`), autenticado con un API key en el header `Authorization`.
 
 ## Contexto de portafolio
 

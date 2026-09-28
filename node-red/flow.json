@@ -1,30 +1,354 @@
 [
-  {"id":"f6f2187d.f17ca8","type":"tab","label":"Flow 1","disabled":false,"info":""},
-  {"id":"3cc11d24.ff01a2","type":"comment","z":"f6f2187d.f17ca8","name":"WARNING: please check you have started this container with a volume that is mounted to /data\\n otherwise any flow changes are lost when you redeploy or upgrade the container\\n (e.g. upgrade to a more recent node-red docker image).\\n  If you are using named volumes you can ignore this warning.\\n Double click or see info side panel to learn how to start Node-RED in Docker to save your work","info":"","x":350,"y":80,"wires":[]},
-
-  {"id":"mqtt_broker_cfg","type":"mqtt-broker","name":"Mosquitto local","broker":"mosquitto","port":"1883","clientid":"","autoConnect":true,"usetls":false,"protocolVersion":"4","keepalive":"60","cleansession":true},
-
-  {"id":"influxdb_cfg","type":"influxdb","hostname":"127.0.0.1","port":8086,"protocol":"http","database":"database","name":"InfluxDB sensores","usetls":false,"tls":"","influxdbVersion":"2.0","url":"http://influxdb:8086","timeout":10,"rejectUnauthorized":true,"credentials":{"token":"CAMBIAR_TOKEN_AQUI"}},
-
-  {"id":"inject_simulate","type":"inject","z":"f6f2187d.f17ca8","name":"Simular cada 5s","props":[{"p":"payload"}],"repeat":"5","once":true,"onceDelay":1,"topic":"","payload":"","payloadType":"date","x":160,"y":180,"wires":[["function_simulate"]]},
-
-  {"id":"function_simulate","type":"function","z":"f6f2187d.f17ca8","name":"Generar temp/humedad falsas","func":"const temperatura = (20 + Math.random() * 15).toFixed(1);\nconst humedad = (30 + Math.random() * 40).toFixed(1);\n\nconst msgTemp = { topic: \"esp32/dht11/temperatura\", payload: temperatura };\nconst msgHum = { topic: \"esp32/dht11/humedad\", payload: humedad };\n\nreturn [[ msgTemp, msgHum ]];","outputs":1,"timeout":0,"noerr":0,"initialize":"","finalize":"","libs":[],"x":410,"y":180,"wires":[["mqtt_out_simulate"]]},
-
-  {"id":"mqtt_out_simulate","type":"mqtt out","z":"f6f2187d.f17ca8","name":"Publicar simulado","topic":"","qos":"0","retain":"","respTopic":"","contentType":"","userProps":"","correl":"","expiry":"","broker":"mqtt_broker_cfg","x":650,"y":180,"wires":[]},
-
-  {"id":"mqtt_in_temp","type":"mqtt in","z":"f6f2187d.f17ca8","name":"Temperatura (MQTT)","topic":"esp32/dht11/temperatura","qos":"0","datatype":"auto","broker":"mqtt_broker_cfg","x":170,"y":300,"wires":[["parse_temp"]]},
-
-  {"id":"parse_temp","type":"function","z":"f6f2187d.f17ca8","name":"A numero","func":"msg.payload = parseFloat(msg.payload);\nreturn msg;","outputs":1,"timeout":0,"noerr":0,"initialize":"","finalize":"","libs":[],"x":400,"y":300,"wires":[["debug_temp","influx_out_temp"]]},
-
-  {"id":"debug_temp","type":"debug","z":"f6f2187d.f17ca8","name":"debug temperatura","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"payload","targetType":"msg","statusVal":"","statusType":"auto","x":650,"y":260,"wires":[]},
-
-  {"id":"influx_out_temp","type":"influxdb out","z":"f6f2187d.f17ca8","influxdb":"influxdb_cfg","name":"Guardar temperatura","measurement":"temperatura","precision":"","retentionPolicy":"","database":"database","precisionV18FluxV20":"ms","retentionPolicyV18Flux":"","org":"iot-org","bucket":"sensores","x":650,"y":340,"wires":[]},
-
-  {"id":"mqtt_in_hum","type":"mqtt in","z":"f6f2187d.f17ca8","name":"Humedad (MQTT)","topic":"esp32/dht11/humedad","qos":"0","datatype":"auto","broker":"mqtt_broker_cfg","x":160,"y":420,"wires":[["parse_hum"]]},
-
-  {"id":"parse_hum","type":"function","z":"f6f2187d.f17ca8","name":"A numero","func":"msg.payload = parseFloat(msg.payload);\nreturn msg;","outputs":1,"timeout":0,"noerr":0,"initialize":"","finalize":"","libs":[],"x":400,"y":420,"wires":[["debug_hum","influx_out_hum"]]},
-
-  {"id":"debug_hum","type":"debug","z":"f6f2187d.f17ca8","name":"debug humedad","active":true,"tosidebar":true,"console":false,"tostatus":false,"complete":"payload","targetType":"msg","statusVal":"","statusType":"auto","x":630,"y":380,"wires":[]},
-
-  {"id":"influx_out_hum","type":"influxdb out","z":"f6f2187d.f17ca8","influxdb":"influxdb_cfg","name":"Guardar humedad","measurement":"humedad","precision":"","retentionPolicy":"","database":"database","precisionV18FluxV20":"ms","retentionPolicyV18Flux":"","org":"iot-org","bucket":"sensores","x":630,"y":460,"wires":[]}
+    {
+        "id": "29709a6185aaadb5",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "mqtt_broker_cfg",
+        "type": "mqtt-broker",
+        "name": "Mosquitto local",
+        "broker": "mosquitto",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "influxdb_cfg",
+        "type": "influxdb",
+        "hostname": "127.0.0.1",
+        "port": 8086,
+        "protocol": "http",
+        "database": "database",
+        "name": "InfluxDB sensores",
+        "usetls": false,
+        "tls": "",
+        "influxdbVersion": "2.0",
+        "url": "http://influxdb:8086",
+        "timeout": 10,
+        "rejectUnauthorized": true
+    },
+    {
+        "id": "c3e3291ca4f6ca26",
+        "type": "influxdb",
+        "hostname": "127.0.0.1",
+        "port": 8086,
+        "protocol": "http",
+        "database": "database",
+        "name": "InfluxDB sensores",
+        "usetls": false,
+        "tls": "",
+        "influxdbVersion": "2.0",
+        "url": "http://influxdb:8086",
+        "timeout": 10,
+        "rejectUnauthorized": true
+    },
+    {
+        "id": "d0fa20cb8a8980d0",
+        "type": "tls-config",
+        "name": "",
+        "certType": "files",
+        "cert": "",
+        "key": "",
+        "p12": "",
+        "p12name": "",
+        "ca": "",
+        "certname": "",
+        "keyname": "",
+        "caname": "ca.crt",
+        "servername": "",
+        "verifyservercert": true,
+        "alpnprotocol": "",
+        "certEnv": "",
+        "keyEnv": "",
+        "caEnv": ""
+    },
+    {
+        "id": "9dc58f2ac0ab8a28",
+        "type": "mqtt-broker",
+        "name": "Mosquitto local",
+        "broker": "mosquitto",
+        "port": "8883",
+        "tls": "d0fa20cb8a8980d0",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": true,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "16e07a7a3bfbedbf",
+        "type": "mqtt in",
+        "z": "29709a6185aaadb5",
+        "name": "Temperatura (MQTT)",
+        "topic": "esp32/dht11/temperatura",
+        "qos": "0",
+        "datatype": "auto",
+        "broker": "9dc58f2ac0ab8a28",
+        "nl": false,
+        "rap": false,
+        "inputs": 0,
+        "x": 170,
+        "y": 300,
+        "wires": [
+            [
+                "1b85e005528e5654"
+            ]
+        ]
+    },
+    {
+        "id": "1b85e005528e5654",
+        "type": "function",
+        "z": "29709a6185aaadb5",
+        "name": "A numero",
+        "func": "msg.payload = parseFloat(msg.payload);\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 400,
+        "y": 300,
+        "wires": [
+            [
+                "cb695d4f7fcc29a3",
+                "806a4a88961f68f2",
+                "9d085773e54e4c2e"
+            ]
+        ]
+    },
+    {
+        "id": "cb695d4f7fcc29a3",
+        "type": "debug",
+        "z": "29709a6185aaadb5",
+        "name": "debug temperatura",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 650,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "806a4a88961f68f2",
+        "type": "influxdb out",
+        "z": "29709a6185aaadb5",
+        "influxdb": "c3e3291ca4f6ca26",
+        "name": "Guardar temperatura",
+        "measurement": "temperatura",
+        "precision": "",
+        "retentionPolicy": "",
+        "database": "database",
+        "precisionV18FluxV20": "ms",
+        "retentionPolicyV18Flux": "",
+        "org": "iot-org",
+        "bucket": "sensores",
+        "x": 650,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "888789e1af678097",
+        "type": "mqtt in",
+        "z": "29709a6185aaadb5",
+        "name": "Humedad (MQTT)",
+        "topic": "esp32/dht11/humedad",
+        "qos": "0",
+        "datatype": "auto",
+        "broker": "9dc58f2ac0ab8a28",
+        "nl": false,
+        "rap": false,
+        "inputs": 0,
+        "x": 160,
+        "y": 420,
+        "wires": [
+            [
+                "02f2484f3a07912f"
+            ]
+        ]
+    },
+    {
+        "id": "02f2484f3a07912f",
+        "type": "function",
+        "z": "29709a6185aaadb5",
+        "name": "A numero",
+        "func": "msg.payload = parseFloat(msg.payload);\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 400,
+        "y": 420,
+        "wires": [
+            [
+                "7e1d8fcf7d955890",
+                "a7b6e524ee92cb25"
+            ]
+        ]
+    },
+    {
+        "id": "7e1d8fcf7d955890",
+        "type": "debug",
+        "z": "29709a6185aaadb5",
+        "name": "debug humedad",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 630,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "a7b6e524ee92cb25",
+        "type": "influxdb out",
+        "z": "29709a6185aaadb5",
+        "influxdb": "c3e3291ca4f6ca26",
+        "name": "Guardar humedad",
+        "measurement": "humedad",
+        "precision": "",
+        "retentionPolicy": "",
+        "database": "database",
+        "precisionV18FluxV20": "ms",
+        "retentionPolicyV18Flux": "",
+        "org": "iot-org",
+        "bucket": "sensores",
+        "x": 670,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "9d085773e54e4c2e",
+        "type": "function",
+        "z": "29709a6185aaadb5",
+        "name": "Evaluar umbral",
+        "func": "const UMBRAL = 35;\nconst COOLDOWN_MS = 10 * 60 * 1000; // 10 minutos\n\nconst estabaEnAlarma = context.get('enAlarma') || false;\nconst ultimoDisparo = context.get('ultimoDisparo') || 0;\nconst ahora = Date.now();\n\nconst enAlarmaAhora = msg.payload > UMBRAL;\n\n// Reset: si vuelve a la normalidad, se habilita para disparar de nuevo\nif (!enAlarmaAhora) {\n    context.set('enAlarma', false);\n    return null;\n}\n\n// Solo dispara si: cruza a alarma (flanco) Y no está en cooldown\nif (enAlarmaAhora && !estabaEnAlarma && (ahora - ultimoDisparo > COOLDOWN_MS)) {\n    context.set('enAlarma', true);\n    context.set('ultimoDisparo', ahora);\n\n    msg.headers = { \"Authorization\": \"Bearer TU_API_KEY_AQUI\" };\n    msg.payload = {\n        asset_id: \"esp32-dht11-01\",\n        alarm_type: \"temperatura_alta\",\n        value: msg.payload,\n        threshold: UMBRAL,\n        timestamp: new Date().toISOString(),\n        source: \"iot-lab\"\n    };\n    return msg;\n}\n\nreturn null; // ya estaba en alarma o en cooldown -> no repetir",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 640,
+        "y": 180,
+        "wires": [
+            [
+                "97f40541ca231122",
+                "127574f9c2cd4685"
+            ]
+        ]
+    },
+    {
+        "id": "97f40541ca231122",
+        "type": "http request",
+        "z": "29709a6185aaadb5",
+        "name": "",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "https://webhook.site/860d31b1-f5af-4545-8cdd-c45ae309bc6c",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 850,
+        "y": 180,
+        "wires": [
+            [
+                "e80cd1b4c98668ef"
+            ]
+        ]
+    },
+    {
+        "id": "e80cd1b4c98668ef",
+        "type": "debug",
+        "z": "29709a6185aaadb5",
+        "name": "debug http request",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1090,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "127574f9c2cd4685",
+        "type": "debug",
+        "z": "29709a6185aaadb5",
+        "name": "debug function",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 980,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "33e28eca2b592142",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-contrib-influxdb": "0.7.0"
+        }
+    }
 ]
