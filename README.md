@@ -87,7 +87,15 @@ La telemetría real requiere el hardware físico (ESP32 + DHT11, cableado DATA�
 
 ## Capturas
 
-> _Pendiente: agregar aquí capturas de pantalla del dashboard de Grafana y de la comparación en Wireshark (antes/después de TLS)._
+**Tráfico Mosquitto↔Node-RED sin cifrar** — se lee el protocolo `MQTT`, el topic (`esp32/dht11/temperatura`) y el payload en claro (`Message: 33302e38` = "30.8" en hex):
+
+![Tráfico MQTT en claro, antes de TLS](docs/screenshots/wireshark-antes-tls.png)
+
+**El mismo tráfico después de activar TLS 1.2/1.3** — Wireshark ya no puede identificar el protocolo interno, solo ve `Application Data` cifrada:
+
+![Tráfico cifrado con TLS](docs/screenshots/wireshark-despues-tls.png)
+
+> _Pendiente: agregar captura del dashboard de Grafana y un GIF corto de la prueba con hardware real disparando el webhook._
 
 ## Detección de eventos e integración externa
 
