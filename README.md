@@ -95,7 +95,13 @@ La telemetría real requiere el hardware físico (ESP32 + DHT11, cableado DATA�
 
 ![Tráfico cifrado con TLS](docs/screenshots/wireshark-despues-tls.png)
 
-> _Pendiente: agregar captura del dashboard de Grafana y un GIF corto de la prueba con hardware real disparando el webhook._
+**Dashboard de Grafana con datos reales del ESP32/DHT11:**
+
+![Dashboard de Grafana](docs/screenshots/grafana-dashboard.png)
+
+**Demo del hardware real:**
+
+![Demo del ESP32 con DHT11](docs/screenshots/demo-hardware.gif)
 
 ## Detección de eventos e integración externa
 
