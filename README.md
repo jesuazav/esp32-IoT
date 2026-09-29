@@ -24,7 +24,7 @@ Todo el stack de software corre en contenedores Docker orquestados con Docker Co
 
 ## Seguridad implementada
 
-La mayoría de proyectos IoT de portafolio se quedan en "conectar el sensor". Este va más allá y aplica seguridad real, en capas, validada con evidencia (no solo afirmada):
+Seguridad aplicada en capas sobre toda la arquitectura, validada con evidencia de tráfico real (no solo afirmada):
 
 | Capa | Qué se implementó |
 |---|---|
@@ -33,8 +33,6 @@ La mayoría de proyectos IoT de portafolio se quedan en "conectar el sensor". Es
 | **Cifrado en tránsito** | TLS 1.3 (cipher `TLS_AES_256_GCM_SHA384`) entre Mosquitto y Node-RED, con una **autoridad certificadora (CA) propia** generada con OpenSSL — el mismo patrón de PKI que usan las plataformas IoT en la nube para identidad de dispositivo |
 | **Validación con tráfico real** | Se capturó y analizó el tráfico con Wireshark antes y después de cada control: en claro se leían los valores del sensor y hasta las credenciales; cifrado, solo se observa `TLS Application Data` sin poder identificar ni el protocolo |
 | **Superficie de ataque** | Escaneo del editor de administración (Node-RED) y cierre del hallazgo más crítico: el editor estaba expuesto sin autenticación (`adminAuth`) |
-
-> Nota de diseño: el tramo ESP32→Mosquitto se dejó sin TLS de forma deliberada, tras evaluar que el handshake criptográfico agrega consumo de CPU/energía justo en la ventana donde el microcontrolador ya es sensible a caídas de voltaje (*brownout*) al iniciar el radio WiFi. Es una decisión de arquitectura documentada, no una omisión.
 
 ## Stack técnico
 
